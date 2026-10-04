@@ -1,6 +1,6 @@
 {
 	"name": "decision-router",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "Pick the right LLM for each prompt with a calibrated decision model (TypeSafe Jev). CLI, Claude Code plugin and Pi extension.",
 	"license": "MIT",
 	"author": "Rui Valim",
