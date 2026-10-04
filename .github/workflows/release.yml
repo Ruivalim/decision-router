@@ -26,8 +26,15 @@ jobs:
       - run: bun run scripts/check-release.ts "$GITHUB_REF_NAME"
       - run: make check
       # With a trusted publisher configured on npmjs.com, OIDC is used and NPM_TOKEN may be absent.
+      # Rerunnable: a version already on the registry is not published again.
+      - id: published
+        run: |
+          if npm view "decision-router@${GITHUB_REF_NAME#v}" version >/dev/null 2>&1; then
+            echo "already=true" >> "$GITHUB_OUTPUT"
+          fi
       # A prerelease (v1.2.0-rc.1) goes to the "next" dist-tag so it never becomes "latest".
-      - run: npm publish --provenance --access public $([[ "$GITHUB_REF_NAME" == *-* ]] && echo --tag next || true)
+      - if: steps.published.outputs.already != 'true'
+        run: npm publish --provenance --access public $([[ "$GITHUB_REF_NAME" == *-* ]] && echo --tag next || true)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes $([[ "$GITHUB_REF_NAME" == *-* ]] && echo --prerelease || true)
