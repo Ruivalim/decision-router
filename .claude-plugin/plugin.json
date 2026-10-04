@@ -1,10 +1,19 @@
 {
   "name": "decision-router",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Route a task to the right Claude model (haiku, sonnet, opus) with a calibrated decision model, then delegate it to a subagent on that model.",
-  "author": { "name": "Rui Valim", "url": "https://github.com/Ruivalim" },
+  "author": {
+    "name": "Rui Valim",
+    "url": "https://github.com/Ruivalim"
+  },
   "homepage": "https://github.com/Ruivalim/decision-router",
   "repository": "https://github.com/Ruivalim/decision-router",
   "license": "MIT",
-  "keywords": ["router", "model-selection", "subagent", "typesafe", "jev"]
+  "keywords": [
+    "router",
+    "model-selection",
+    "subagent",
+    "typesafe",
+    "jev"
+  ]
 }
