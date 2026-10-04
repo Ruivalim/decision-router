@@ -1,20 +1,45 @@
-name: ci
+name: CI
 
 on:
   push:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
+    name: Check Node ${{ matrix.node-version }}
     runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24]
+
     steps:
-      - uses: actions/checkout@v7
-      - uses: oven-sh/setup-bun@v2.2.0
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.4.2
-      - uses: actions/setup-node@v7
+
+      # The published CLI targets Node; `make check` ends with a smoke run of the bundle on it.
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 20
-      - run: make setup
-      - run: make check
+          node-version: ${{ matrix.node-version }}
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: make setup
+
+      - name: Run quality gate
+        run: make check

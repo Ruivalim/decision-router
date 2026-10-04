@@ -17,7 +17,6 @@ MAKEFLAGS += --warn-undefined-variables --no-builtin-rules --no-print-directory
 APP   ?= decision-router
 ARGS  ?= --help
 CASES ?= examples/claude-code-cases.jsonl
-VERSION ?=
 
 # Cores só quando stdout é um terminal (pipe e CI ficam limpos)
 BOLD  :=
@@ -86,10 +85,15 @@ check: lint test build smoke ## Tudo que o CI roda: lint, test, build, smoke
 
 ##@ Release
 
-.PHONY: release
-release: ## Sobe versão, commita e cria a tag local (VERSION=0.2.0); o push da tag publica
-	@echo "$(GREEN)▸ release $(VERSION)$(RESET)"
-	scripts/release.sh $(VERSION)
+.PHONY: whoami
+whoami: ## Mostra quem está autenticado no npm (E401 = sessão morta)
+	@echo "$(GREEN)▸ whoami$(RESET)"
+	npm whoami
+
+.PHONY: publish
+publish: ## Publica do local, só como plano B do Release Please (prepublishOnly roda o gate)
+	@echo "$(GREEN)▸ publish$(RESET)"
+	npm publish --access public
 
 ##@ Build
 

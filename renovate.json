@@ -1,0 +1,28 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": ["config:recommended", ":dependencyDashboard", "group:allNonMajor", "helpers:pinGitHubActionDigests"],
+	"timezone": "America/Sao_Paulo",
+	"schedule": ["on monday"],
+	"labels": ["dependencies"],
+	"prConcurrentLimit": 5,
+	"minimumReleaseAge": "3 days",
+	"packageRules": [
+		{
+			"description": "Keep GitHub Actions updates together",
+			"matchManagers": ["github-actions"],
+			"groupName": "GitHub Actions"
+		},
+		{
+			"description": "Do not narrow peer dependency compatibility",
+			"matchManagers": ["npm"],
+			"matchDepTypes": ["peerDependencies"],
+			"rangeStrategy": "widen"
+		},
+		{
+			"description": "Test against the newest Pi: the pinned dev copies move together in their own PR, the peer range stays as is",
+			"matchPackageNames": ["@earendil-works/**"],
+			"matchDepTypes": ["devDependencies"],
+			"groupName": "pi"
+		}
+	]
+}

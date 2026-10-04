@@ -1,52 +1,69 @@
-name: release
+name: Release
 
 on:
   push:
-    tags: ["v*"]
-  # Rerun the release of an existing tag with the current workflow; finished steps are skipped.
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: Existing tag to release, e.g. v0.1.1
-        required: true
+    branches: [main]
 
-permissions:
-  contents: write # GitHub release
-  id-token: write # npm trusted publishing and provenance
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  publish:
+  release-please:
+    name: Prepare release
     runs-on: ubuntu-26.04
-    env:
-      TAG: ${{ inputs.tag || github.ref_name }}
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    outputs:
+      release-created: ${{ steps.release.outputs.release_created }}
+      tag-name: ${{ steps.release.outputs.tag_name }}
+
     steps:
-      - uses: actions/checkout@v7
+      - name: Create or update release PR
+        id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+
+  publish:
+    name: Publish to npm
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release-created == 'true' }}
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing and provenance
+
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: refs/tags/${{ env.TAG }}
-      - uses: oven-sh/setup-bun@v2.2.0
+          ref: ${{ needs.release-please.outputs.tag-name }}
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: 1.4.2
-      - uses: actions/setup-node@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
           # No cache in a publishing job: a poisoned cache would ship in the package.
           package-manager-cache: false
-      # Trusted publishing needs npm 11.5.1 or newer.
-      - run: npm install -g npm@latest
-      - run: make setup
-      - run: bun run scripts/check-release.ts "$TAG"
-      - run: make check
-      # Rerunnable: a version already on the registry is not published again.
-      - id: published
-        run: |
-          if npm view "decision-router@${TAG#v}" version >/dev/null 2>&1; then
-            echo "already=true" >> "$GITHUB_OUTPUT"
-          fi
+
+      - name: Install dependencies
+        run: make setup
+
+      - name: Check versions and repository URL against the tag
+        run: bun run scripts/check-release.ts "${{ needs.release-please.outputs.tag-name }}"
+
+      - name: Run quality gate
+        run: make check
+
       # Authenticates through npm trusted publishing (OIDC); no token is stored anywhere.
-      # A prerelease (v1.2.0-rc.1) goes to the "next" dist-tag so it never becomes "latest".
-      - if: steps.published.outputs.already != 'true'
-        run: npm publish --provenance --access public $([[ "$TAG" == *-* ]] && echo --tag next || true)
-      - run: gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --verify-tag --generate-notes $([[ "$TAG" == *-* ]] && echo --prerelease || true)
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Publish through npm trusted publishing
+        run: npm publish --provenance --access public
