@@ -1,7 +1,7 @@
 {
   "name": "decision-router",
   "description": "Pick the right model for each task with a calibrated decision model.",
-  "owner": { "name": "Rui Valim", "url": "https://github.com/ruivalim" },
+  "owner": { "name": "Rui Valim", "url": "https://github.com/Ruivalim" },
   "plugins": [
     {
       "name": "decision-router",

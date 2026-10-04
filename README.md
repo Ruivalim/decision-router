@@ -52,7 +52,7 @@ Get a key at [console.typesafe.ai](https://console.typesafe.ai). Jev charges per
 ### Claude Code
 
 ```
-/plugin marketplace add ruivalim/decision-router
+/plugin marketplace add Ruivalim/decision-router
 /plugin install decision-router@decision-router
 ```
 

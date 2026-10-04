@@ -6,11 +6,11 @@
 	"author": "Rui Valim",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/ruivalim/decision-router.git"
+		"url": "git+https://github.com/Ruivalim/decision-router.git"
 	},
-	"homepage": "https://github.com/ruivalim/decision-router#readme",
+	"homepage": "https://github.com/Ruivalim/decision-router#readme",
 	"bugs": {
-		"url": "https://github.com/ruivalim/decision-router/issues"
+		"url": "https://github.com/Ruivalim/decision-router/issues"
 	},
 	"type": "module",
 	"bin": {

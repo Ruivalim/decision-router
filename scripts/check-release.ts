@@ -10,6 +10,12 @@ if (!/^v\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(tag)) problems.push(`tag "${tag}"
 if (pkg.version !== want) problems.push(`package.json is ${pkg.version}, tag says ${want}`);
 if (plugin.version !== want) problems.push(`.claude-plugin/plugin.json is ${plugin.version}, tag says ${want}`);
 
+// npm provenance compares repository.url with the repo that built it, case included.
+const repo = process.env.GITHUB_REPOSITORY;
+if (repo && !pkg.repository.url.includes(`github.com/${repo}.git`)) {
+	problems.push(`package.json repository.url is ${pkg.repository.url}, but this build runs in ${repo}`);
+}
+
 if (problems.length) {
 	for (const p of problems) console.error(`release check: ${p}`);
 	process.exit(1);
