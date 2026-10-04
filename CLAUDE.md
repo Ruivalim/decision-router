@@ -6,9 +6,13 @@ Routes a prompt to the right model using TypeSafe's Jev. One core, three faces: 
 
 `make help` lists everything. `make check` is exactly what CI runs (biome, tsc, tests, build). `make eval` hits the live Jev API and needs a key.
 
+## Commits and releases
+
+Conventional commits: Release Please reads them to build the release PR (below 1.0, a breaking change bumps the minor and `feat` or `fix` the patch). Merging that PR publishes to npm through `.github/workflows/release.yml` with trusted publishing; the npm trust config is bound to that file name, so do not rename it. The plugin manifest version is bumped by Release Please too (`extra-files`).
+
 ## Runtime rule: Node, not Bun
 
-The npm package runs on Node 20.3+, so code under `src/` uses only `node:` modules and web APIs (`fetch`, `AbortSignal`). No `Bun.*`, `bun:sqlite` or `Bun.$` there. Bun is the dev toolchain: `bun test`, `bun install`, and `scripts/build.ts` (which may use Bun APIs). After touching `src/`, run the built `dist/cli.js` under Node, not just the tests.
+The npm package runs on Node 22+, so code under `src/` uses only `node:` modules and web APIs (`fetch`, `AbortSignal`). No `Bun.*`, `bun:sqlite` or `Bun.$` there. Bun is the dev toolchain: `bun test`, `bun install`, and `scripts/build.ts` (which may use Bun APIs). After touching `src/`, run the built `dist/cli.js` under Node, not just the tests.
 
 ## Layout
 

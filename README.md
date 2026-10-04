@@ -31,12 +31,12 @@ On the 30 labeled prompts in `examples/claude-code-cases.jsonl`:
 | Jev, Choice only (`--no-floor`) | 73% (22/30) | 8 | 0 |
 | Keyword heuristic | 73% (22/30) | 4 | 4 |
 
-Take these numbers as a smoke test, not a benchmark: 30 prompts, labeled by one person. Run `decision-router eval` on prompts from your own work, and send feedback (below) when a pick is wrong.
+Take these numbers as a smoke test, not a benchmark: 30 prompts, labeled while the router was being built, with no independent review. Run `decision-router eval` on prompts from your own work, and send feedback (below) when a pick is wrong.
 
 ## Install
 
 ```bash
-npm install -g decision-router     # Node 20.3 or newer
+npm install -g decision-router     # Node 22 or newer
 decision-router auth set           # paste your TypeSafe API key
 decision-router pick "rename foo to bar in utils.ts"
 ```
@@ -178,7 +178,11 @@ make help     # everything else
 
 The code is TypeScript, developed and tested with Bun, and bundled for Node so the npm package runs without Bun.
 
-Releases: `make release VERSION=0.2.0` bumps `package.json` and the plugin manifest, commits and tags. Pushing the tag (`git push origin main --follow-tags`) runs `.github/workflows/release.yml`, which checks the versions, runs `make check`, publishes to npm with provenance and creates the GitHub release. A version with a suffix (`0.2.0-rc.1`) publishes under the `next` dist-tag. If a release fails halfway, fix it and rerun it from the Actions tab (`release`, with the tag as input): steps already done are skipped.
+Releases are automated with Release Please and npm trusted publishing: conventional commits merged into `main` update a release PR, and merging that PR tags the version, creates the GitHub release and publishes to npm with provenance from `.github/workflows/release.yml`, without a stored npm token. Renovate keeps dependencies and the pinned action digests current. `make publish` is only a manual fallback.
+
+## How this was built
+
+Most of the code, tests and docs were written by an AI coding agent (Claude Code), directed by the author, who made the product and design decisions. The evaluation numbers above come from running the tool; the labels behind them were assigned by the agent during that work.
 
 ## License
 
