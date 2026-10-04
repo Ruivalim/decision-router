@@ -1,0 +1,30 @@
+{"prompt": "rename the variable foo to bar in utils.ts", "expected": "haiku"}
+{"prompt": "what does git rebase --onto do?", "expected": "haiku"}
+{"prompt": "fix the typo in the README heading", "expected": "haiku"}
+{"prompt": "list every TODO comment in src/", "expected": "haiku"}
+{"prompt": "bump lodash to the latest patch version in package.json", "expected": "haiku"}
+{"prompt": "add a .nvmrc pinning node 22", "expected": "haiku"}
+{"prompt": "format this JSON file with 2-space indentation", "expected": "haiku"}
+{"prompt": "what port does the dev server listen on?", "expected": "haiku"}
+{"prompt": "convert this bash one-liner to use xargs -0", "expected": "haiku"}
+{"prompt": "add a missing semicolon on line 42 of app.js", "expected": "haiku"}
+{"prompt": "add pagination to the /users endpoint with tests", "expected": "sonnet"}
+{"prompt": "write unit tests for the date parsing helpers, including leap years and invalid input", "expected": "sonnet"}
+{"prompt": "implement a retry with exponential backoff for the HTTP client and cover it with tests", "expected": "sonnet"}
+{"prompt": "refactor the settings page component into smaller components without changing behaviour", "expected": "sonnet"}
+{"prompt": "fix the bug where the cart total ignores discounts applied after login", "expected": "sonnet"}
+{"prompt": "add a CLI flag --dry-run that prints the actions instead of executing them", "expected": "sonnet"}
+{"prompt": "review this pull request diff for bugs and style issues", "expected": "sonnet"}
+{"prompt": "write a GitHub Actions workflow that runs lint, tests and build on every PR", "expected": "sonnet"}
+{"prompt": "migrate the user repository from raw SQL strings to the query builder, keeping the tests green", "expected": "sonnet"}
+{"prompt": "add input validation to the signup form with helpful error messages", "expected": "sonnet"}
+{"prompt": "our websocket server deadlocks under load when two clients reconnect at the same time, find the root cause and redesign the connection lifecycle", "expected": "opus"}
+{"prompt": "design the architecture for multi-tenant isolation across the API, workers and database, with the trade-offs", "expected": "opus"}
+{"prompt": "the payment reconciliation job double-charges a handful of customers every month and nobody knows why; investigate", "expected": "opus"}
+{"prompt": "audit the authentication flow for security vulnerabilities, including token refresh and session fixation", "expected": "opus"}
+{"prompt": "split this 40k-line monolith into services: propose boundaries, migration order and how to keep it running meanwhile", "expected": "opus"}
+{"prompt": "memory grows without bound in production only after ~3 days of uptime; figure out the leak from these heap snapshots", "expected": "opus"}
+{"prompt": "design a plugin system for the editor that stays backwards compatible and sandboxes third-party code", "expected": "opus"}
+{"prompt": "renomeia a função calcTotal para calculateTotal em todo o projeto", "expected": "haiku"}
+{"prompt": "adiciona testes para o parser de CSV cobrindo aspas, vírgula dentro de campo e linha vazia", "expected": "sonnet"}
+{"prompt": "o cache distribuído às vezes devolve dado velho depois de um deploy, investiga a causa e propõe uma correção", "expected": "opus"}

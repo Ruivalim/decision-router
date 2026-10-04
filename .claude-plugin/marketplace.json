@@ -1,0 +1,13 @@
+{
+  "name": "decision-router",
+  "description": "Pick the right model for each task with a calibrated decision model.",
+  "owner": { "name": "Rui Valim", "url": "https://github.com/ruivalim" },
+  "plugins": [
+    {
+      "name": "decision-router",
+      "description": "Route a task to haiku, sonnet or opus and delegate it to a subagent on that model.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: make setup
+      - run: make check
+      # The published CLI targets Node, so smoke-test the built bundle there too.
+      - run: node dist/cli.js pick --backend heuristic --no-log "rename foo to bar"
