@@ -3,6 +3,12 @@ name: release
 on:
   push:
     tags: ["v*"]
+  # Rerun the release of an existing tag with the current workflow; finished steps are skipped.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to release, e.g. v0.1.1
+        required: true
 
 permissions:
   contents: write # GitHub release
@@ -10,33 +16,37 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ env.TAG }}
+      - uses: oven-sh/setup-bun@v2.2.0
         with:
           bun-version: 1.4.2
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
+          # No cache in a publishing job: a poisoned cache would ship in the package.
+          package-manager-cache: false
       # Trusted publishing needs npm 11.5.1 or newer.
       - run: npm install -g npm@latest
       - run: make setup
-      - run: bun run scripts/check-release.ts "$GITHUB_REF_NAME"
+      - run: bun run scripts/check-release.ts "$TAG"
       - run: make check
-      # With a trusted publisher configured on npmjs.com, OIDC is used and NPM_TOKEN may be absent.
       # Rerunnable: a version already on the registry is not published again.
       - id: published
         run: |
-          if npm view "decision-router@${GITHUB_REF_NAME#v}" version >/dev/null 2>&1; then
+          if npm view "decision-router@${TAG#v}" version >/dev/null 2>&1; then
             echo "already=true" >> "$GITHUB_OUTPUT"
           fi
+      # Authenticates through npm trusted publishing (OIDC); no token is stored anywhere.
       # A prerelease (v1.2.0-rc.1) goes to the "next" dist-tag so it never becomes "latest".
       - if: steps.published.outputs.already != 'true'
-        run: npm publish --provenance --access public $([[ "$GITHUB_REF_NAME" == *-* ]] && echo --tag next || true)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes $([[ "$GITHUB_REF_NAME" == *-* ]] && echo --prerelease || true)
+        run: npm publish --provenance --access public $([[ "$TAG" == *-* ]] && echo --tag next || true)
+      - run: gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --verify-tag --generate-notes $([[ "$TAG" == *-* ]] && echo --prerelease || true)
         env:
           GH_TOKEN: ${{ github.token }}
