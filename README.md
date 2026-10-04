@@ -178,6 +178,8 @@ make help     # everything else
 
 The code is TypeScript, developed and tested with Bun, and bundled for Node so the npm package runs without Bun.
 
+Releases: `make release VERSION=0.2.0` bumps `package.json` and the plugin manifest, commits and tags. Pushing the tag (`git push origin main --follow-tags`) runs `.github/workflows/release.yml`, which checks the versions, runs `make check`, publishes to npm with provenance and creates the GitHub release. A version with a suffix (`0.2.0-rc.1`) publishes under the `next` dist-tag.
+
 ## License
 
 MIT

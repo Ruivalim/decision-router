@@ -17,6 +17,7 @@ MAKEFLAGS += --warn-undefined-variables --no-builtin-rules --no-print-directory
 APP   ?= decision-router
 ARGS  ?= --help
 CASES ?= examples/claude-code-cases.jsonl
+VERSION ?=
 
 # Cores só quando stdout é um terminal (pipe e CI ficam limpos)
 BOLD  :=
@@ -77,6 +78,13 @@ test: ## Roda os testes (sem rede, sem chave)
 .PHONY: check
 check: lint test build ## Tudo que o CI roda: lint, test, build
 	@echo "$(GREEN)✓ check ok$(RESET)"
+
+##@ Release
+
+.PHONY: release
+release: ## Sobe versão, commita e cria a tag local (VERSION=0.2.0); o push da tag publica
+	@echo "$(GREEN)▸ release $(VERSION)$(RESET)"
+	scripts/release.sh $(VERSION)
 
 ##@ Build
 
