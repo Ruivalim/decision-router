@@ -2,7 +2,7 @@ import { afterEach, expect, test } from "bun:test";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { type Io, main } from "../src/cli.ts";
+import { exitQuietlyOnEpipe, type Io, main } from "../src/cli.ts";
 
 const dirs: string[] = [];
 afterEach(() => {
@@ -126,4 +126,14 @@ test("eval rejects a case whose expected model is not a candidate", async () => 
 	writeFileSync(file, JSON.stringify({ prompt: "x", expected: "gpt-9" }));
 	expect(await main(["eval", file, "--backend", "heuristic"], h.io)).toBe(2);
 	expect(h.err.join("")).toContain("not a candidate");
+});
+
+test("a closed pipe on stdout exits 0; other stream errors still surface", () => {
+	const { EventEmitter } = require("node:events") as typeof import("node:events");
+	const stream = new EventEmitter();
+	const codes: number[] = [];
+	exitQuietlyOnEpipe(stream, (c) => codes.push(c));
+	stream.emit("error", Object.assign(new Error("write EPIPE"), { code: "EPIPE" }));
+	expect(codes).toEqual([0]);
+	expect(() => stream.emit("error", Object.assign(new Error("disk full"), { code: "ENOSPC" }))).toThrow("disk full");
 });

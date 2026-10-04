@@ -75,8 +75,13 @@ test: ## Roda os testes (sem rede, sem chave)
 	@echo "$(GREEN)▸ test$(RESET)"
 	env -u TYPESAFE_API_KEY bun test
 
+.PHONY: smoke
+smoke: build ## Roda o bundle no Node como o usuário roda, com pipe
+	@echo "$(GREEN)▸ smoke$(RESET)"
+	scripts/smoke.sh
+
 .PHONY: check
-check: lint test build ## Tudo que o CI roda: lint, test, build
+check: lint test build smoke ## Tudo que o CI roda: lint, test, build, smoke
 	@echo "$(GREEN)✓ check ok$(RESET)"
 
 ##@ Release

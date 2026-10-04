@@ -18,5 +18,3 @@ jobs:
           node-version: 20
       - run: make setup
       - run: make check
-      # The published CLI targets Node, so smoke-test the built bundle there too.
-      - run: node dist/cli.js pick --backend heuristic --no-log "rename foo to bar"

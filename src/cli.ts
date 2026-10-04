@@ -307,6 +307,17 @@ function cmdConfig(args: string[], io: Io): number {
 	throw new UsageError("usage: decision-router config path|init");
 }
 
+/** A reader that stops early (`| head`) closes the pipe. That ends the output; it is not a failure. */
+export function exitQuietlyOnEpipe(
+	stream: NodeJS.EventEmitter,
+	exit: (code: number) => void = (code) => process.exit(code),
+): void {
+	stream.on("error", (err: NodeJS.ErrnoException) => {
+		if (err.code !== "EPIPE") throw err;
+		exit(0);
+	});
+}
+
 export async function main(argv: string[], io: Io = defaultIo()): Promise<number> {
 	const [cmd, ...rest] = argv;
 	try {
